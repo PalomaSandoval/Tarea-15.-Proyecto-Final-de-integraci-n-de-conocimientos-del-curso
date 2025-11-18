@@ -1,7 +1,8 @@
-
 <?php
 
-    //Archivo para registrar usarios nuevos en el login ya que usa Insert Into
+    //Archivo para registrar usarios nuevos de la BDD en el login ya que usa Insert Into
+    //trabaja en conjunto con el archivo FormularioRegistroUsuarios.php
+
 
     // Conexión a la base de datos
     $conexion = mysqli_connect("localhost", "root", "", "proyectofinal");
@@ -11,8 +12,7 @@
     $Password = $_POST['contraseña']; 
 
     try {
-        $consulta = "INSERT INTO usuarios (usuario, password, correo) VALUES ('$Usuario', '$Password', '$Correo')";
-        
+        $consulta = "INSERT INTO usuarios (Nombre, password, Correo) VALUES ('$Usuario', '$Password', '$Correo')";        
         $resultado_consulta = mysqli_query($conexion, $consulta);
 
         if (!$resultado_consulta) {
@@ -22,10 +22,10 @@
         // echo $consulta; 
 
     } catch (Exception $e) {
-        header("Location: Formulario.php?error=1");
+        header("Location: FormularioRegistroUsuarios.php?error=1");
         exit(); 
     }
     mysqli_close($conexion);
-    header("Location: Formulario.php");
+    header("Location: loginInicioSesion.php");
     exit();
 ?>

@@ -1,52 +1,51 @@
 <?php
-    //este archivo funciona para el login, para iniciar sesion con
-    //el usuario/contraseña
-    //y tambien para manejar las cookies si es que ya habia iniciado sesion antes
-    
-    // validar usuarios Cookies con Base de Datos
+    // valida si existen los archivos q quieren iniciar sesion, tbm valida las cookies
 
 
-
-    //Si ya existen cookies, es un autologin
-    if(isset($_COOKIE["usuario"]) && isset($_COOKIE["password"])){
-        header("Location: PaginaPrincipalBienvenida.php");
+    // si ya hay cookies 
+    if(isset($_COOKIE["correo"]) && isset($_COOKIE["contraseña"])){
+        header("Location: ../PaginaPrincipalBienvenida.php");
         exit();
     }
 
-    // Si no existen las cookies, se verifica  si mandó el formulario con post
-    if(isset($_POST['usuario']) && isset($_POST['contraseña'])) { 
+    // Si no hay cookies,
+    if(isset($_POST['correo']) && isset($_POST['Contrasena'])) { 
         
         // Conexión a la BD
         $conexion = mysqli_connect("localhost", "root", "", "proyectofinal"); 
 
-        $Usuario = $_POST['usuario'];
-        $Password = $_POST['contraseña'];
-
-        // consulta con select a la bdd
-        $consulta = "SELECT * FROM usuarios WHERE usuario = '$Usuario' AND password = '$Password'";
+        $Correo = $_POST['correo']; 
+        $Password = $_POST['Contrasena']; 
+        
+        $consulta = "SELECT * FROM usuarios WHERE Correo = '$Correo' AND password = '$Password'";       
         $resultado = mysqli_query($conexion, $consulta);
         
-        // si se encontro un usuario
         $usuariosEncontrados = mysqli_num_rows($resultado);
+        
         if ($usuariosEncontrados > 0) {
-            //botón de Recordarme
-            if (isset($_POST["recordarme"])){
-                // las cookies por 1 día (60*60*24)
-                setcookie("usuario", $Usuario, time()+86400, "/");
-                setcookie("password", $Password, time()+86400, "/");
+            
+            // Si encontró al usuario
+            $EncontroUsuario = mysqli_fetch_assoc($resultado);
+            $NombreDelUsuario = $EncontroUsuario['Nombre'];            
+            // Botón de Recordarme
+            if (isset($_POST["recordarme"])){ 
+                setcookie("correo", $Correo, time()+120, "/");  //nomas tiene 2minutos
+                setcookie("contraseña", $Password, time()+120, "/");
+                setcookie("nombreUsuario", $NombreDelUsuario, time()+120, "/"); 
             }
 
-            header("Location: PaginaPrincipalBienvenida.php");
+            header("Location: ../PaginaPrincipalBienvenida.php");
             exit();
 
         } else {
-            header("Location: login.php?error=1");
+            header("Location: loginInicioSesion.php?error=1");
             exit();
         }
 
         mysqli_close($conexion);
     } else {
-        header("Location: login.php");
+        // Si entra sin datos
+        header("Location: loginInicioSesion.php");
         exit();
     }
 ?>
