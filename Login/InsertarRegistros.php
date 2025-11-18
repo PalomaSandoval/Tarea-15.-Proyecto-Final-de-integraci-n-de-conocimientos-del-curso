@@ -1,6 +1,10 @@
+
 <?php
+
+    //Archivo para registrar usarios nuevos en el login ya que usa Insert Into
+
     // Conexión a la base de datos
-    $conexion = mysqli_connect("localhost", "root", "", "usuarios");
+    $conexion = mysqli_connect("localhost", "root", "", "proyectofinal");
 
     $Usuario = $_POST['nombre']; 
     $Correo = $_POST['correo'];
