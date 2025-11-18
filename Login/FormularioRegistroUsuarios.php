@@ -8,7 +8,13 @@
 <body>
     
     <h2>Registro de Usuarios</h2>
-    
+    <div class="error-message">
+    <?php
+        if(isset($_GET['error']) && $_GET['error'] == 'repetido') { 
+            echo "Ese correo o usuario ya esta en uso"; 
+        }
+    ?>
+</div>
     <form action="InsertarRegistros.php" method="post">
 
         <label for="nombre">Nombre de Usuario: </label>
@@ -22,6 +28,7 @@
 
         <input type="submit" value="Registrarse">
        
+        
         <div>
         <p>¿Ya tienes una cuenta?</p>
         <a href="loginInicioSesion.php">Inicia Sesión</a>
