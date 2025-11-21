@@ -66,6 +66,9 @@
         <br><br>
 
         <input type="submit" value="Guardar Cambios">
+
+        <a href="../Bienvenida.php" class="btn btn-rojo">Ir a pagina principal</a>
+
     </form>
 </body>
 </html>
