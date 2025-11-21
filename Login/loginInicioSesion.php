@@ -2,7 +2,7 @@
 session_start();
 
 if(isset($_SESSION["usuario"])){ 
-    header("Location: ../PaginaPrincipalBienvenida.php");
+    header("Location: ../Bienvenida.php");
     exit();
 }
 

@@ -1,8 +1,10 @@
 <?php
+
+//Validar el inicio de sesion de los usuarios 
     session_start();
 
     if(isset($_SESSION["usuario"])){
-        header("Location: ../PaginaPrincipalBienvenida.php");
+        header("Location: ../Bienvenida.php");
         exit();
     }
 
@@ -31,7 +33,7 @@
                 
             }
 
-            header("Location: ../PaginaPrincipalBienvenida.php");
+            header("Location: ../Bienvenida.php");
             exit();
 
         } else {
