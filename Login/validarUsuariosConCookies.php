@@ -1,14 +1,11 @@
 <?php
-    // valida si existen los archivos q quieren iniciar sesion, tbm valida las cookies
+    session_start();
 
-
-    // si ya hay cookies 
-    if(isset($_COOKIE["correo"]) && isset($_COOKIE["contraseña"])){
+    if(isset($_SESSION["usuario"])){
         header("Location: ../PaginaPrincipalBienvenida.php");
         exit();
     }
 
-    // Si no hay cookies,
     if(isset($_POST['correo']) && isset($_POST['Contrasena'])) { 
         
         // Conexión a la BD
@@ -17,6 +14,7 @@
         $Correo = $_POST['correo']; 
         $Password = $_POST['Contrasena']; 
         
+        // Buscamos al usuario
         $consulta = "SELECT * FROM usuarios WHERE Correo = '$Correo' AND password = '$Password'";       
         $resultado = mysqli_query($conexion, $consulta);
         
@@ -27,13 +25,17 @@
             // Si encontró al usuario
             $EncontroUsuario = mysqli_fetch_assoc($resultado);
             $NombreDelUsuario = $EncontroUsuario['Nombre'];            
-            // Botón de Recordarme
+
+            
+            $_SESSION["usuario"] = $NombreDelUsuario;
+            $_SESSION["correo"] = $Correo;
+
             if (isset($_POST["recordarme"])){ 
-                setcookie("correo", $Correo, time()+120, "/");  //nomas tiene 2minutos
-                setcookie("contraseña", $Password, time()+120, "/");
-                setcookie("nombreUsuario", $NombreDelUsuario, time()+120, "/"); 
+                setcookie("correo", $Correo, time()+120, "/");  
+                
             }
 
+            //bienvenida
             header("Location: ../PaginaPrincipalBienvenida.php");
             exit();
 
@@ -44,7 +46,7 @@
 
         mysqli_close($conexion);
     } else {
-        // Si entra sin datos
+        // Si entra sin datos y sin sesión
         header("Location: loginInicioSesion.php");
         exit();
     }
