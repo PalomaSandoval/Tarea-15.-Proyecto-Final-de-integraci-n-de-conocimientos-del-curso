@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fecha_pago = $_POST['fecha_pago'];
     $tipo_membresia = $_POST['tipo_membresia'];
 
-    // Switch para poder guardar los costos en la base de datos por separado
+    // Switch para que los costos se agreguen automatico a la base de datos
     $costo = 0; 
     switch ($tipo_membresia) {
         case 'Mensual': $costo = 500; break;
@@ -96,17 +96,40 @@ $resultado = $conn->query("SELECT * FROM miembros");
     <h1> Gym Uach Fing</h1>
     
     <h2><?php echo ($accion === 'guardar' ? 'Nuevo Cliente' : 'Editando Cliente'); ?></h2>
-    
+
     <form action="FormularioABC.php" method="POST">
         <input type="hidden" name="id" value="<?php echo $id_editar; ?>">
         <input type="hidden" name="accion" value="<?php echo $accion; ?>">
 
-        <label>Nombre:</label> <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre_editar); ?>" required>
-        <label>Apellidos:</label> <input type="text" name="apellidos" value="<?php echo htmlspecialchars($apellidos_editar); ?>" required><br><br>
+        <label>Nombre:</label> 
+        <input 
+            type="text" 
+            name="nombre" 
+            value="<?php echo htmlspecialchars($nombre_editar); ?>" 
+            oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" 
+            required>
+            
+        <label>Apellidos:</label> 
+        <input 
+            type="text" 
+            name="apellidos" 
+            value="<?php echo htmlspecialchars($apellidos_editar); ?>" 
+            oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')"
+            required>
+        <br><br>
 
-        <label>Teléfono:</label> <input type="tel" name="telefono" value="<?php echo htmlspecialchars($telefono_editar); ?>" required>
+        <label>Teléfono (10 dígitos):</label> 
+        <input 
+            type="tel" 
+            name="telefono" 
+            value="<?php echo htmlspecialchars($telefono_editar); ?>" 
+            maxlength="10" 
+            pattern="[0-9]{10}" 
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            title="Solo se aceptan 10 números"
+            required>
         
-        <label>Fecha de Nacimiento:</label> 
+        <label>F. Nacimiento:</label> 
         <input type="date" name="fecha_nacimiento" value="<?php echo htmlspecialchars($fecha_nacimiento_editar); ?>" max="<?php echo $hoy; ?>" required><br><br>
 
         <label>Sexo:</label>
@@ -118,7 +141,7 @@ $resultado = $conn->query("SELECT * FROM miembros");
         </select>
         <br><br>
         
-        <label>Fecha de Pago:</label> 
+        <label>Fecha de Pago (Automática):</label> 
         <input type="date" name="fecha_pago" value="<?php echo htmlspecialchars($fecha_pago_editar); ?>" readonly required>
         <br><br>
 
@@ -144,6 +167,7 @@ $resultado = $conn->query("SELECT * FROM miembros");
         <thead>
             <tr>
                 <th>Nombre</th>
+                <th>Teléfono</th>
                 <th>Fecha Pago</th>
                 <th>Membresía</th>
                 <th>Costo</th>
@@ -156,6 +180,7 @@ $resultado = $conn->query("SELECT * FROM miembros");
                 while($fila = $resultado->fetch_assoc()) {
                     echo "<tr>";
                     echo "<td>" . $fila["nombre"] . " " . $fila["apellidos"] . "</td>";
+                    echo "<td>" . $fila["telefono"] . "</td>";
                     echo "<td>" . $fila["fecha_pago"] . "</td>";
                     echo "<td>" . $fila["tipo_membresia"] . "</td>";
                     echo "<td>$" . number_format($fila["costo"], 2) . "</td>"; 
