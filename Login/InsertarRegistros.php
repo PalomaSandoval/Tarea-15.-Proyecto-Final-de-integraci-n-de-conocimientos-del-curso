@@ -9,7 +9,8 @@
     $duplicadoDeUsuarios = "SELECT * FROM usuarios WHERE Correo = '$Correo' OR Nombre = '$Usuario'";
     $resultadoD = mysqli_query($conexion, $duplicadoDeUsuarios);
 
-    if (mysqli_num_rows($resultadoD) > 0) {
+    if ($yaExiste = mysqli_fetch_array($resultadoD)) {
+        
         header("Location: FormularioRegistroUsuarios.php?error=repetido");
         exit(); 
     }
