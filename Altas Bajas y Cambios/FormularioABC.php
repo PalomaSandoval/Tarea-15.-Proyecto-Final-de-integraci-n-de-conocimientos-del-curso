@@ -13,57 +13,7 @@ $fecha_pago_editar = $hoy;
 $tipo_membresia_editar = '';
 $accion = 'guardar';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'];
-    $apellidos = $_POST['apellidos'];
-    $telefono = $_POST['telefono'];
-    $fecha_nacimiento = $_POST['fecha_nacimiento'];
-    $sexo = $_POST['sexo'];
-    $fecha_pago = $_POST['fecha_pago'];
-    $tipo_membresia = $_POST['tipo_membresia'];
-
-    // Switch para que los costos se agreguen automatico a la base de datos
-    $costo = 0; 
-    switch ($tipo_membresia) {
-        case 'Mensual': $costo = 500; break;
-        case '3 Meses': $costo = 1250; break;
-        case '6 Meses': $costo = 2500; break;
-        case '1 Año':   $costo = 4500; break;
-        default:        $costo = 0; break;
-    }
-
-    if ($_POST['accion'] === 'guardar') {
-        // --- ALTA ---
-        $stmt = $conn->prepare("INSERT INTO miembros (nombre, apellidos, telefono, fecha_nacimiento, sexo, fecha_pago, tipo_membresia, costo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssd", $nombre, $apellidos, $telefono, $fecha_nacimiento, $sexo, $fecha_pago, $tipo_membresia, $costo);
-
-        if ($stmt->execute()) {
-            echo "<p>¡Alta lista! Se cobraron $$costo varos.</p>";
-        } else {
-            echo "<p>Error: " . $stmt->error . "</p>";
-        }
-        $stmt->close();
-    } elseif ($_POST['accion'] === 'actualizar') {
-        // --- CAMBIO ---
-        $id = $_POST['id'];
-        $stmt = $conn->prepare("UPDATE miembros SET nombre = ?, apellidos = ?, telefono = ?, fecha_nacimiento = ?, sexo = ?, fecha_pago = ?, tipo_membresia = ?, costo = ? WHERE id = ?");
-        $stmt->bind_param("sssssssdi", $nombre, $apellidos, $telefono, $fecha_nacimiento, $sexo, $fecha_pago, $tipo_membresia, $costo, $id);
-
-        if ($stmt->execute()) {
-            echo "<p>¡Datos actualizados!</p>";
-        }
-        $stmt->close();
-    }
-}
-
-// Bajas
-if (isset($_GET['borrar'])) {
-    $id = $_GET['borrar'];
-    $conn->query("DELETE FROM miembros WHERE id = $id");
-    echo "<p>Borrado.</p>";
-}
-
-// Cargar Edición
+// --- LOGICA DE CARGAR DATOS PARA EDITAR ---
 if (isset($_GET['editar'])) {
     $id = $_GET['editar'];
     $result = $conn->query("SELECT * FROM miembros WHERE id = $id");
@@ -81,53 +31,82 @@ if (isset($_GET['editar'])) {
     }
 }
 
-// Tabla
-$resultado = $conn->query("SELECT * FROM miembros");
+// --- LOGICA DE GUARDAR / ACTUALIZAR ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = $_POST['nombre'];
+    $apellidos = $_POST['apellidos'];
+    $telefono = $_POST['telefono'];
+    $fecha_nacimiento = $_POST['fecha_nacimiento'];
+    $sexo = $_POST['sexo'];
+    $fecha_pago = $_POST['fecha_pago'];
+    $tipo_membresia = $_POST['tipo_membresia'];
+
+    // Switch de para agregar los costos a la tabla de la bd
+    $costo = 0; 
+    switch ($tipo_membresia) {
+        case 'Mensual': $costo = 500; break;
+        case '3 Meses': $costo = 1250; break;
+        case '6 Meses': $costo = 2500; break;
+        case '1 Año':   $costo = 4500; break;
+        default:        $costo = 0; break;
+    }
+
+    if ($_POST['accion'] === 'guardar') {
+        // --- ALTA ---
+        $stmt = $conn->prepare("INSERT INTO miembros (nombre, apellidos, telefono, fecha_nacimiento, sexo, fecha_pago, tipo_membresia, costo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssd", $nombre, $apellidos, $telefono, $fecha_nacimiento, $sexo, $fecha_pago, $tipo_membresia, $costo);
+
+        if ($stmt->execute()) {
+            echo "<p>¡Registro hecho! Se cobraron $$costo pesos.</p>";
+        } else {
+            echo "<p>Error: " . $stmt->error . "</p>";
+        }
+        $stmt->close();
+    } elseif ($_POST['accion'] === 'actualizar') {
+        // --- CAMBIO ---
+        $id = $_POST['id'];
+        $stmt = $conn->prepare("UPDATE miembros SET nombre = ?, apellidos = ?, telefono = ?, fecha_nacimiento = ?, sexo = ?, fecha_pago = ?, tipo_membresia = ?, costo = ? WHERE id = ?");
+        $stmt->bind_param("sssssssdi", $nombre, $apellidos, $telefono, $fecha_nacimiento, $sexo, $fecha_pago, $tipo_membresia, $costo, $id);
+
+        if ($stmt->execute()) {
+            echo "<p>¡Datos actualizados correctamente!</p>";
+            // Opcional: Redirigir a consultas después de editar
+            // header("Location: Consultas.php"); 
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gym Cloud</title>
+    <title>Registro Gym</title>
 </head>
 <body>
 
-    <h1> Gym Uach Fing</h1>
+    <h1>Registro de Miembros</h1>
     
-    <h2><?php echo ($accion === 'guardar' ? 'Nuevo Cliente' : 'Editando Cliente'); ?></h2>
+    <p>
+        <a href="Consultas.php"><button type="button">Ir a Consultas y Búsqueda</button></a>
+    </p>
+    
+    <h2><?php echo ($accion === 'guardar' ? 'Nuevo Cliente' : 'Editando Cliente ID: ' . $id_editar); ?></h2>
 
     <form action="FormularioABC.php" method="POST">
         <input type="hidden" name="id" value="<?php echo $id_editar; ?>">
         <input type="hidden" name="accion" value="<?php echo $accion; ?>">
 
         <label>Nombre:</label> 
-        <input 
-            type="text" 
-            name="nombre" 
-            value="<?php echo htmlspecialchars($nombre_editar); ?>" 
-            oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" 
-            required>
+        <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre_editar); ?>" oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" required>
             
         <label>Apellidos:</label> 
-        <input 
-            type="text" 
-            name="apellidos" 
-            value="<?php echo htmlspecialchars($apellidos_editar); ?>" 
-            oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')"
-            required>
+        <input type="text" name="apellidos" value="<?php echo htmlspecialchars($apellidos_editar); ?>" oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" required>
         <br><br>
 
-        <label>Teléfono (10 dígitos):</label> 
-        <input 
-            type="tel" 
-            name="telefono" 
-            value="<?php echo htmlspecialchars($telefono_editar); ?>" 
-            maxlength="10" 
-            pattern="[0-9]{10}" 
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            title="Solo se aceptan 10 números"
-            required>
+        <label>Teléfono:</label> 
+        <input type="tel" name="telefono" value="<?php echo htmlspecialchars($telefono_editar); ?>" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo se aceptan 10 números" required>
         
         <label>F. Nacimiento:</label> 
         <input type="date" name="fecha_nacimiento" value="<?php echo htmlspecialchars($fecha_nacimiento_editar); ?>" max="<?php echo $hoy; ?>" required><br><br>
@@ -141,7 +120,7 @@ $resultado = $conn->query("SELECT * FROM miembros");
         </select>
         <br><br>
         
-        <label>Fecha de Pago (Automática):</label> 
+        <label>Fecha de Pago:</label> 
         <input type="date" name="fecha_pago" value="<?php echo htmlspecialchars($fecha_pago_editar); ?>" readonly required>
         <br><br>
 
@@ -155,45 +134,12 @@ $resultado = $conn->query("SELECT * FROM miembros");
         </select>
         
         <br><br>
-        <button type="submit">Guardar</button>
+        <button type="submit"><?php echo ($accion === 'guardar' ? 'Guardar' : 'Actualizar'); ?></button>
         
         <?php if ($accion === 'actualizar'): ?>
-            <a href="FormularioABC.php"><button type="button">Cancelar</button></a>
+            <a href="Consultas.php"><button type="button">Cancelar Edición</button></a>
         <?php endif; ?>
     </form>
-
-    <h2> Clientes Registrados</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Fecha Pago</th>
-                <th>Membresía</th>
-                <th>Costo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($resultado->num_rows > 0) {
-                while($fila = $resultado->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $fila["nombre"] . " " . $fila["apellidos"] . "</td>";
-                    echo "<td>" . $fila["telefono"] . "</td>";
-                    echo "<td>" . $fila["fecha_pago"] . "</td>";
-                    echo "<td>" . $fila["tipo_membresia"] . "</td>";
-                    echo "<td>$" . number_format($fila["costo"], 2) . "</td>"; 
-                    echo "<td>";
-                    echo "<a href='FormularioABC.php?editar=" . $fila["id"] . "'>Editar</a> | ";
-                    echo "<a href='FormularioABC.php?borrar=" . $fila["id"] . "'>Borrar</a>";
-                    echo "</td>";
-                    echo "</tr>";
-                }
-            }
-            ?>
-        </tbody>
-    </table>
 
 </body>
 </html>
