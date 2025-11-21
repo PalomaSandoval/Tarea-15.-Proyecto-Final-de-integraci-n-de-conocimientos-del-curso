@@ -23,9 +23,9 @@
         <p>Sistema de Control del Gym.</p>
         <hr>
 
-        <a href="Registro/FormularioAlta.php" class="btn">Registrar Nuevo Cliente</a>
+        <a href="Pag altas de registros (ABC)/FormularioAlta.php" class="btn">Registrar Nuevo Cliente</a>
 
-        <a href="Consultas/ListaMiembros.php" class="btn">Ver Lista de Miembros</a>
+        <a href="Pag Consultas (ABC)/ListaMiembros.php" class="btn">Ver Lista de Miembros</a>
 
         <a href="Descargas.php" class="btn">Ir a Descargas</a>
 
