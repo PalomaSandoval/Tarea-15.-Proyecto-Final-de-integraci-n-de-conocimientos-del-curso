@@ -1,13 +1,15 @@
 <?php
-session_start();
+    session_start(); 
 
-if(isset($_SESSION["usuario"])){ 
-    header("Location: ../Bienvenida.php");
-    exit();
-}
-
-
+    // Si tien SESIÓN O tienes COOKIE
+    if(isset($_SESSION["usuario"]) || isset($_COOKIE["usuario_autenticado"])){ 
+        header("Location: ../Bienvenida.php"); 
+        exit();
+    }
 ?>
+
+<!DOCTYPE html>
+<html lang="es">
 
 <!DOCTYPE html>
 <html lang="es">
@@ -19,20 +21,20 @@ if(isset($_SESSION["usuario"])){
 <body>
     
 <h2>Inicio de Sesión</h2>
-<form action="validarUsuariosConCookies.php" method="post">
+<form action="autenticar.php" method="post">
 
     <label for="correo">Correo Electrónico: </label>
     <input type="email" id="correo" name="correo" 
-           value="<?php if(isset($_COOKIE['correo'])) echo $_COOKIE['correo']; ?>" required> 
-
+       value="<?php if(isset($_COOKIE['correo_recordado'])) echo htmlspecialchars($_COOKIE['correo_recordado']); ?>" required>
+   
     <label for="Contrasena">Contraseña: </label>
     <input type="password" id="Contrasena" name="Contrasena" required>
 
     <input type="submit" value="Iniciar sesión">
 
     <div class="checkbox-container">
-        <input type="checkbox" id="recordar" name="recordarme" <?php if(isset($_COOKIE['correo'])) echo "checked"; ?>> 
-        <label for="recordarme">Recordar usuario</label>
+        <input type="checkbox" ... <?php if(isset($_COOKIE['correo_recordado'])) echo "checked"; ?>>    
+            <label for="recordarme">Recordar usuario</label>
     </div>
 
 

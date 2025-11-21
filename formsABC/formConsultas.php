@@ -1,12 +1,36 @@
 <?php
+    session_start(); 
+
+    // sesión activa? 
+    if (!isset($_SESSION["usuario"])) {
+        
+        // no tiene sesión. pero si quiza una cookie
+        if (isset($_COOKIE["usuario_autenticado"])) {
+            
+            // si existe la cookie se inicia sesion
+            $_SESSION["usuario"] = $_COOKIE["usuario_autenticado"];
+            
+        } else {
+
+            header("Location: Login/login.php"); 
+            exit();
+        }
+    }
+    
+    $usuario = $_SESSION["usuario"];
+    
+    // Conexión 
     $conexion = mysqli_connect("localhost", "root", "", "proyectofinal");
 
     $where = "";
     $busqueda = "";
 
-    // Lógica del buscador
+    // Lógica del buscador 
     if (isset($_POST['buscar'])) {
-        $busqueda = $_POST['caja_busqueda'];
+ 
+        $busqueda = mysqli_real_escape_string($conexion, $_POST['caja_busqueda']);
+        
+        // 
         $where = "WHERE nombre LIKE '%$busqueda%' OR apellidos LIKE '%$busqueda%'";
     }
 
@@ -24,7 +48,7 @@
 
     <h1>Administración y Consultas</h1>
 
-    <a href="../Pag altas de registros (ABC)/FormularioAlta.php"><button type="button">+ Nuevo Registro</button></a>
+    <a href="../formsABC/formAltaMiembro.php"><button type="button">+ Nuevo Registro</button></a>
     <hr>
     
     <?php
@@ -32,11 +56,14 @@
         if(isset($_GET['mensaje']) && $_GET['mensaje'] == 'actualizado') echo "Datos actualizados";
     ?>
 
-    <form action="ListaMiembros.php" method="POST">
+    <form action="formConsultas.php" method="POST">
         <label>Buscar:</label>
-        <input type="text" name="caja_busqueda" value="<?php echo $busqueda; ?>">
+        <input type="text" name="caja_busqueda" value="<?php echo htmlspecialchars($busqueda); ?>">
         <input type="submit" name="buscar" value="Buscar">
-        <a href="ListaMiembros.php"><button type="button">Ver Todos</button></a>
+        <a href="formConsultas.php"><button type="button">Ver Todos</button></a>
+
+        <a href="../Bienvenida.php" class="btn btn-rojo">Ir a pagina principal</a>
+
     </form>
     <br>
 
@@ -54,16 +81,14 @@
             <?php
             while($fila = mysqli_fetch_array($resultado)) {
                 echo "<tr>";
-                echo "<td>" . $fila['nombre'] . " " . $fila['apellidos'] . "</td>";
-                echo "<td>" . $fila['telefono'] . "</td>";
-                echo "<td>" . $fila['tipo_membresia'] . "</td>";
-                echo "<td>" . $fila['fecha_pago'] . "</td>";
+                echo "<td>" . htmlspecialchars($fila['nombre']) . " " . htmlspecialchars($fila['apellidos']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['telefono']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['tipo_membresia']) . "</td>";
+                echo "<td>" . htmlspecialchars($fila['fecha_pago']) . "</td>";
                 echo "<td>";
                 
-                // EDITAR: Va al archivo FormularioEditar.php 
-                echo "<a href='FormularioEditar.php?id=" . $fila['id'] . "'>Editar</a> | ";
+                echo "<a href='formEditarMiembro.php?id=" . $fila['id'] . "'>Editar</a> | ";
                 
-                // BORRAR: Va al archivo OperacionesConsultas.php 
                 echo "<a href='OperacionesConsultas.php?borrar=" . $fila['id'] . "' onclick='return confirm(\"¿Seguro que lo borras?\");'>Borrar</a>";
                 
                 echo "</td>";

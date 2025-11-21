@@ -1,14 +1,12 @@
 <?php
-    session_start();
-
-    // Si no hay usuario logueado
-    if(!isset($_SESSION["usuario"])){ 
-        header("Location: Login/loginInicioSesion.php");
+    if(!isset($_COOKIE["usuario_autenticado"])){ 
+        header("Location: Login/login.php"); 
         exit();
     }
     
-    $usuario = $_SESSION["usuario"];
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -23,9 +21,9 @@
         <p>Sistema de Control del Gym.</p>
         <hr>
 
-        <a href="Pag altas de registros (ABC)/FormularioAlta.php" class="btn">Registrar Nuevo Cliente</a>
+        <a href="formsABC/formAltaMiembro.php" class="btn">Registrar Nuevo Cliente</a>
 
-        <a href="Pag Consultas (ABC)/ListaMiembros.php" class="btn">Ver Lista de Miembros</a>
+        <a href="formsABC/formConsultas.php" class="btn">Ver Lista de Miembros</a>
 
         <a href="Descargas.php" class="btn">Ir a Descargas</a>
 

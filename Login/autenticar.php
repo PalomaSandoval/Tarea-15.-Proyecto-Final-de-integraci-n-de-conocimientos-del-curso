@@ -1,6 +1,4 @@
 <?php
-
-//Validar el inicio de sesion de los usuarios 
     session_start();
 
     if(isset($_SESSION["usuario"])){
@@ -8,43 +6,49 @@
         exit();
     }
 
+    if(isset($_COOKIE["usuario_autenticado"])){
+        $_SESSION["usuario"] = $_COOKIE["usuario_autenticado"]; // Revivimos la sesión
+        header("Location: ../Bienvenida.php");
+        exit();
+    }
+
     if(isset($_POST['correo']) && isset($_POST['Contrasena'])) { 
         
-        //  base
         $conexion = mysqli_connect("localhost", "root", "", "proyectofinal"); 
 
-        $Correo = $_POST['correo']; 
-        $Password = $_POST['Contrasena']; 
+        $Correo = mysqli_real_escape_string($conexion, $_POST['correo']); 
+        $Password = mysqli_real_escape_string($conexion, $_POST['Contrasena']); 
         
-        //  select
         $consulta = "SELECT * FROM usuarios WHERE Correo = '$Correo' AND password = '$Password'";       
         $resultado = mysqli_query($conexion, $consulta);
         
         if ($EncontroUsuario = mysqli_fetch_array($resultado)) {
             
             $NombreDelUsuario = $EncontroUsuario['Nombre'];            
-            $_SESSION["usuario"] = $NombreDelUsuario;
-            $_SESSION["correo"] = $Correo;
 
+
+            $_SESSION["usuario"] = $NombreDelUsuario;
+            
+            // COOKIE Solo si se puso "Recordarme" 
+            setcookie("usuario_autenticado", $NombreDelUsuario, time() + 60, "/");
+            
+            // Cookie del correo 
             if (isset($_POST["recordarme"])){ 
-                setcookie("correo", $Correo, time()+120, "/");
-                
-                setcookie("usuario", $NombreDelUsuario, time()+120, "/"); 
-                
+                setcookie("correo_recordado", $Correo, time() + 60, "/");
             }
 
             header("Location: ../Bienvenida.php");
             exit();
 
         } else {
-            header("Location: loginInicioSesion.php?error=1");
+            header("Location: login.php?error=1");
             exit();
         }
 
         mysqli_close($conexion);
 
     } else {
-        header("Location: loginInicioSesion.php");
+        header("Location: login.php");
         exit();
     }
 ?>

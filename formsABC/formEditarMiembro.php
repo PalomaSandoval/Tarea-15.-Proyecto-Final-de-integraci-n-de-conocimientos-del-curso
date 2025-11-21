@@ -1,20 +1,40 @@
 <?php
+    session_start(); 
+
+    // sesión activa? 
+    if (!isset($_SESSION["usuario"])) {
+        
+        // no tiene sesión. pero si quiza una cookie
+        if (isset($_COOKIE["usuario_autenticado"])) {
+            
+            // si existe la cookie se inicia sesion
+            $_SESSION["usuario"] = $_COOKIE["usuario_autenticado"];
+            
+        } else {
+
+            header("Location: Login/login.php"); 
+            exit();
+        }
+    }
+    
+    $usuario = $_SESSION["usuario"];
+    
+    
     $conexion = mysqli_connect("localhost", "root", "", "proyectofinal");
+    
     if (!isset($_GET['id'])) {
-        header("Location: ListaMiembros.php");
+        header("Location: formConsultas.php");
         exit();
     }
 
-    $id = $_GET['id'];
+    $id = mysqli_real_escape_string($conexion, $_GET['id']);
 
-    // Buscamos los datos en la base
     $sql = "SELECT * FROM miembros WHERE id = '$id'";
     $resultado = mysqli_query($conexion, $sql);
     $fila = mysqli_fetch_array($resultado);
 
     if (!$fila) {
-        // lista
-        header("Location: ListaMiembros.php");
+        header("Location: formConsultas.php");
         exit();
     }
 ?>
@@ -26,9 +46,9 @@
     <title>Editar Miembro</title>
 </head>
 <body>
-    <h2>Editando a: <?php echo $fila['nombre']; ?></h2>
+    <h2>Editando a: <?php echo htmlspecialchars($fila['nombre']); ?></h2>
 
-    <a href="ListaMiembros.php"><button type="button">Cancelar y Regresar</button></a>
+    <a href="formConsultas.php"><button type="button">Cancelar y Regresar</button></a>
     <br><br>
 
     <form action="OperacionesConsultas.php" method="post">
@@ -36,14 +56,14 @@
         <input type="hidden" name="id" value="<?php echo $fila['id']; ?>">
 
         <label>Nombre:</label>
-        <input type="text" name="nombre" value="<?php echo $fila['nombre']; ?>" required>
+        <input type="text" name="nombre" value="<?php echo htmlspecialchars($fila['nombre']); ?>" required>
 
         <label>Apellidos:</label>
-        <input type="text" name="apellidos" value="<?php echo $fila['apellidos']; ?>" required>
+        <input type="text" name="apellidos" value="<?php echo htmlspecialchars($fila['apellidos']); ?>" required>
         <br><br>
 
         <label>Teléfono:</label>
-        <input type="number" name="telefono" value="<?php echo $fila['telefono']; ?>" required>
+        <input type="number" name="telefono" value="<?php echo htmlspecialchars($fila['telefono']); ?>" required>
 
         <label>F. Nacimiento:</label>
         <input type="date" name="fecha_nacimiento" value="<?php echo $fila['fecha_nacimiento']; ?>" required>

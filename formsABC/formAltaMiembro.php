@@ -1,3 +1,24 @@
+<?php
+    session_start(); 
+
+    // sesión activa? 
+    if (!isset($_SESSION["usuario"])) {
+        
+        // no tiene sesión. pero si quiza una cookie
+        if (isset($_COOKIE["usuario_autenticado"])) {
+            
+            // si existe la cookie se inicia sesion
+            $_SESSION["usuario"] = $_COOKIE["usuario_autenticado"];
+            
+        } else {
+
+            header("Location: Login/login.php"); 
+            exit();
+        }
+    }
+    
+    $usuario = $_SESSION["usuario"];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,10 +28,11 @@
 <body>
     <h1>Nuevo Cliente</h1>
     
-    <a href="../Pag Consultas (ABC)/ListaMiembros.php"><button type="button">Ir a Ver Lista</button></a>
+    <a href="../formsABC/formConsultas.php"><button type="button">Ir a Ver Lista</button></a>
     <hr>
 
     <?php 
+        
         // registro
         if(isset($_GET['estatus']) && $_GET['estatus'] == 'ok') {
             echo "Cliente registrado";

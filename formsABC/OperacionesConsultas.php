@@ -1,28 +1,29 @@
 <?php
     $conexion = mysqli_connect("localhost", "root", "", "proyectofinal");
 
-    // borrar
+    // borarr
     if (isset($_GET['borrar'])) {
-        $id_borrar = $_GET['borrar'];
+        $id_borrar = mysqli_real_escape_string($conexion, $_GET['borrar']);
         
         $sql = "DELETE FROM miembros WHERE id = '$id_borrar'";
         mysqli_query($conexion, $sql);
 
         // lista
-        header("Location: ListaMiembros.php?mensaje=borrado");
+        header("Location: formConsultas.php?mensaje=borrado");
         exit();
     }
 
     // actualizar
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
-        $id = $_POST['id']; // ID oculto
-        $nombre = $_POST['nombre'];
-        $apellidos = $_POST['apellidos'];
-        $telefono = $_POST['telefono'];
-        $fecha_nacimiento = $_POST['fecha_nacimiento'];
-        $sexo = $_POST['sexo'];
-        $tipo_membresia = $_POST['tipo_membresia'];
+        // Limpieza general de todo lo que llegó del formulario
+        $id = mysqli_real_escape_string($conexion, $_POST['id']); 
+        $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+        $apellidos = mysqli_real_escape_string($conexion, $_POST['apellidos']);
+        $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+        $fecha_nacimiento = mysqli_real_escape_string($conexion, $_POST['fecha_nacimiento']);
+        $sexo = mysqli_real_escape_string($conexion, $_POST['sexo']);
+        $tipo_membresia = mysqli_real_escape_string($conexion, $_POST['tipo_membresia']);
         
         // Recalcular costo
         $costo = 0;
@@ -31,7 +32,7 @@
         elseif ($tipo_membresia == '6 Meses') $costo = 2500;
         elseif ($tipo_membresia == '1 Año') $costo = 4500;
 
-        // Update
+        // Update 
         $sql = "UPDATE miembros SET 
                 nombre='$nombre', 
                 apellidos='$apellidos', 
@@ -45,7 +46,7 @@
         $resultado = mysqli_query($conexion, $sql);
 
         if ($resultado) {
-            header("Location: ListaMiembros.php?mensaje=actualizado");
+            header("Location: formConsultas.php?mensaje=actualizado");
         } else {
             echo "Error al actualizar: " . mysqli_error($conexion);
         }
