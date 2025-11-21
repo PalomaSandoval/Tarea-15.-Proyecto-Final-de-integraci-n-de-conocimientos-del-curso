@@ -1,9 +1,7 @@
 <?php
 include 'conexion.php';
 
-// --- TRUCO: Sacamos la fecha de hoy de una vez ---
 $hoy = date('Y-m-d');
-
 // Variables iniciales
 $id_editar = '';
 $nombre_editar = '';
@@ -11,7 +9,6 @@ $apellidos_editar = '';
 $telefono_editar = '';
 $fecha_nacimiento_editar = '';
 $sexo_editar = '';
-// Para la fecha de pago, si es nuevo, usamos HOY por defecto.
 $fecha_pago_editar = $hoy; 
 $tipo_membresia_editar = '';
 $accion = 'guardar';
@@ -25,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fecha_pago = $_POST['fecha_pago'];
     $tipo_membresia = $_POST['tipo_membresia'];
 
-    // Switch para el costo
+    // Switch para poder guardar los costos en la base de datos por separado
     $costo = 0; 
     switch ($tipo_membresia) {
         case 'Mensual': $costo = 500; break;
@@ -78,7 +75,7 @@ if (isset($_GET['editar'])) {
         $telefono_editar = $fila['telefono'];
         $fecha_nacimiento_editar = $fila['fecha_nacimiento'];
         $sexo_editar = $fila['sexo'];
-        $fecha_pago_editar = $fila['fecha_pago']; // Aquí cargamos la fecha original del cliente
+        $fecha_pago_editar = $fila['fecha_pago'];
         $tipo_membresia_editar = $fila['tipo_membresia'];
         $accion = 'actualizar';
     }
@@ -99,17 +96,18 @@ $resultado = $conn->query("SELECT * FROM miembros");
     <h1> Gym Uach Fing</h1>
     
     <h2><?php echo ($accion === 'guardar' ? 'Nuevo Cliente' : 'Editando Cliente'); ?></h2>
-    <form action="index.php" method="POST">
+    
+    <form action="FormularioABC.php" method="POST">
         <input type="hidden" name="id" value="<?php echo $id_editar; ?>">
         <input type="hidden" name="accion" value="<?php echo $accion; ?>">
 
         <label>Nombre:</label> <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre_editar); ?>" required>
         <label>Apellidos:</label> <input type="text" name="apellidos" value="<?php echo htmlspecialchars($apellidos_editar); ?>" required><br><br>
 
-        <label>Teléfono:</label> <input type="tel" name="telefono" value="<?php echo htmlspecialchars($telefono_editar); ?>">
+        <label>Teléfono:</label> <input type="tel" name="telefono" value="<?php echo htmlspecialchars($telefono_editar); ?>" required>
         
-        <label>F. Nacimiento:</label> 
-        <input type="date" name="fecha_nacimiento" value="<?php echo htmlspecialchars($fecha_nacimiento_editar); ?>" max="<?php echo $hoy; ?>"><br><br>
+        <label>Fecha de Nacimiento:</label> 
+        <input type="date" name="fecha_nacimiento" value="<?php echo htmlspecialchars($fecha_nacimiento_editar); ?>" max="<?php echo $hoy; ?>" required><br><br>
 
         <label>Sexo:</label>
         <select name="sexo" required>
@@ -137,7 +135,7 @@ $resultado = $conn->query("SELECT * FROM miembros");
         <button type="submit">Guardar</button>
         
         <?php if ($accion === 'actualizar'): ?>
-            <a href="index.php"><button type="button">Cancelar</button></a>
+            <a href="FormularioABC.php"><button type="button">Cancelar</button></a>
         <?php endif; ?>
     </form>
 
@@ -162,8 +160,8 @@ $resultado = $conn->query("SELECT * FROM miembros");
                     echo "<td>" . $fila["tipo_membresia"] . "</td>";
                     echo "<td>$" . number_format($fila["costo"], 2) . "</td>"; 
                     echo "<td>";
-                    echo "<a href='index.php?editar=" . $fila["id"] . "'>Editar</a> | ";
-                    echo "<a href='index.php?borrar=" . $fila["id"] . "'>Borrar</a>";
+                    echo "<a href='FormularioABC.php?editar=" . $fila["id"] . "'>Editar</a> | ";
+                    echo "<a href='FormularioABC.php?borrar=" . $fila["id"] . "'>Borrar</a>";
                     echo "</td>";
                     echo "</tr>";
                 }
