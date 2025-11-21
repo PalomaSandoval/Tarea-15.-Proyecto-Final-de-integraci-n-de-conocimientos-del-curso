@@ -3,7 +3,7 @@
 
     // Si no hay usuario logueado
     if(!isset($_SESSION["usuario"])){ 
-        header("Location: loginInicioSesion.php");
+        header("Location: Login/loginInicioSesion.php");
         exit();
     }
     
