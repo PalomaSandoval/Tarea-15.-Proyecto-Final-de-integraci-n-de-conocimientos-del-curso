@@ -1,9 +1,12 @@
 <?php
-// PHP de autologin si hay cookies
-if(isset($_COOKIE["correo"]) && isset($_COOKIE["contraseña"])){ 
+session_start();
+
+if(isset($_SESSION["usuario"])){ 
     header("Location: ../PaginaPrincipalBienvenida.php");
     exit();
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +22,8 @@ if(isset($_COOKIE["correo"]) && isset($_COOKIE["contraseña"])){
 <form action="validarUsuariosConCookies.php" method="post">
 
     <label for="correo">Correo Electrónico: </label>
-    <input type="email" id="correo" name="correo" required> 
+    <input type="email" id="correo" name="correo" 
+           value="<?php if(isset($_COOKIE['correo'])) echo $_COOKIE['correo']; ?>" required> 
 
     <label for="Contrasena">Contraseña: </label>
     <input type="password" id="Contrasena" name="Contrasena" required>
@@ -27,7 +31,7 @@ if(isset($_COOKIE["correo"]) && isset($_COOKIE["contraseña"])){
     <input type="submit" value="Iniciar sesión">
 
     <div class="checkbox-container">
-        <input type="checkbox" id="recordar" name="recordarme"> 
+        <input type="checkbox" id="recordar" name="recordarme" <?php if(isset($_COOKIE['correo'])) echo "checked"; ?>> 
         <label for="recordarme">Recordar usuario</label>
     </div>
 
