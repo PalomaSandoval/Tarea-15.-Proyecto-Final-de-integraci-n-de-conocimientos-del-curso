@@ -35,10 +35,7 @@ if(isset($_SESSION["usuario"])){
         <label for="recordarme">Recordar usuario</label>
     </div>
 
-    <div>
-    <p>¿No tienes cuenta?</p>
-    <a href="FormularioRegistroUsuarios.php">Registrate</a>
-    </div>
+
 
     <div class="error-message">
         <?php
