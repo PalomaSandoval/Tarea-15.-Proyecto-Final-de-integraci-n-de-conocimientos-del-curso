@@ -1,17 +1,11 @@
 <?php
     session_start(); 
 
-    // sesión activa? 
+    // Validar sesión (igual que siempre)
     if (!isset($_SESSION["usuario"])) {
-        
-        // no tiene sesión. pero si quiza una cookie
         if (isset($_COOKIE["usuario_autenticado"])) {
-            
-            // si existe la cookie se inicia sesion
             $_SESSION["usuario"] = $_COOKIE["usuario_autenticado"];
-            
         } else {
-
             header("Location: Login/login.php"); 
             exit();
         }
@@ -27,10 +21,7 @@
 
     // Lógica del buscador 
     if (isset($_POST['buscar'])) {
- 
         $busqueda = mysqli_real_escape_string($conexion, $_POST['caja_busqueda']);
-        
-        // 
         $where = "WHERE nombre LIKE '%$busqueda%' OR apellidos LIKE '%$busqueda%'";
     }
 
@@ -42,14 +33,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Lista Miembros</title>
+    <title>Lista Miembros - Gym Rat</title>
 
     <style>
-    /* --- 1. BASE Y TIPOGRAFÍA --- */
+    /* --- 1. BASE BELICOSA --- */
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background-color: #f3f4f6; /* Gris muy suave, casi blanco */
-        color: #1f2937; /* Gris oscuro elegante (no negro puro) */
+        background-color: #f3f4f6;
+        color: #1f2937;
         margin: 0;
         padding: 40px 20px;
         display: flex;
@@ -58,221 +49,248 @@
         min-height: 100vh;
     }
 
-    /* --- 2. TÍTULOS --- */
-    h1, h2, h3 {
-        font-weight: 700;
+    h1 {
+        font-weight: 800;
         color: #111827;
-        margin-bottom: 24px;
-        letter-spacing: -0.025em; /* Un toque moderno */
+        margin-bottom: 20px;
         text-align: center;
     }
 
-    /* --- 3. TARJETAS Y CONTENEDORES --- */
-    .contenedor, form, .lista-descargas {
-        background-color: #ffffff;
-        padding: 40px;
-        border-radius: 12px; /* Bordes redondeados suaves */
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025); /* Sombra difuminada pro */
-        width: 100%;
-        max-width: 480px; /* Ancho controlado */
-        box-sizing: border-box;
-        margin-bottom: 20px;
-        border: 1px solid #e5e7eb; /* Borde sutil */
-    }
-
-    /* --- 4. CAMPOS DE TEXTO (INPUTS) --- */
-    label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 6px;
-        margin-top: 16px;
-    }
-
-    input[type="text"], input[type="number"], input[type="date"], 
-    input[type="tel"], input[type="email"], input[type="password"], select {
-        width: 100%;
-        padding: 12px 16px;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #111827;
-        background-color: #f9fafb;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        box-sizing: border-box;
-        transition: all 0.2s ease;
-        outline: none;
-    }
-
-    /* Efecto al seleccionar un campo */
-    input:focus, select:focus {
-        border-color: #4f46e5; /* Azul Indigo */
-        background-color: #ffffff;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    }
-
-    /* --- 5. BOTONES PRO --- */
-    button, input[type="submit"], .btn {
-        width: 100%;
-        display: inline-flex;
-        justify-content: center;
+    /* --- 2. BARRA DE ACCIONES (Buscador y botones) --- */
+    .barra-acciones {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
         align-items: center;
-        padding: 14px 24px;
-        margin-top: 24px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #ffffff;
-        background-color: #111827; /* Negro casi puro (Estilo Apple/Vercel) */
-        border: 1px solid transparent;
-        border-radius: 8px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background-color 0.2s, transform 0.1s;
-        box-sizing: border-box;
-    }
-
-    button:hover, input[type="submit"]:hover, .btn:hover {
-        background-color: #000000;
-        transform: translateY(-1px); /* Se levanta un poquito */
-    }
-
-    /* Botones Secundarios / Peligro */
-    .btn-rojo, button[type="button"] { 
-        background-color: #ffffff;
-        color: #ef4444; /* Rojo moderno */
-        border: 1px solid #e5e7eb;
-        margin-top: 12px;
-    }
-
-    .btn-rojo:hover, button[type="button"]:hover {
-        background-color: #fef2f2;
-        border-color: #fecaca;
-        color: #dc2626;
-    }
-
-    /* --- 6. TABLAS (Minimalistas) --- */
-    table {
+        justify-content: center;
         width: 100%;
         max-width: 1000px;
+        margin-bottom: 24px;
+    }
+
+    input[type="text"] {
+        padding: 10px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        outline: none;
+        font-size: 0.95rem;
+        width: 250px;
+    }
+    
+    input[type="text"]:focus { border-color: #4f46e5; }
+
+    /* Botones chiquitos para la barra */
+    .btn-chico {
+        padding: 10px 16px;
+        background-color: #111827;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-chico:hover { background-color: #000; transform: translateY(-1px); }
+    
+    .btn-secundario { background-color: #fff; color: #374151; border: 1px solid #d1d5db; }
+    .btn-secundario:hover { background-color: #f9fafb; color: #111827; }
+    
+    .btn-rojo { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .btn-rojo:hover { background-color: #fecaca; }
+
+    /* --- 3. TABLA PRO --- */
+    .tabla-contenedor {
+        width: 100%;
+        max-width: 1100px;
+        overflow-x: auto; /* Scroll si no cabe en pantallas chicas */
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+    }
+
+    table {
+        width: 100%;
         border-collapse: collapse;
         background: white;
-        border-radius: 12px;
-        overflow: hidden; /* Para que las esquinas redondas se vean */
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        margin-top: 20px;
+        min-width: 800px; /* Ancho mínimo para que no se aplaste */
     }
 
     thead {
-        background-color: #f9fafb;
-        border-bottom: 2px solid #e5e7eb;
+        background-color: #1f2937; /* Encabezado oscuro elegante */
+        color: #ffffff;
     }
 
     th {
         text-transform: uppercase;
         font-size: 0.75rem;
         letter-spacing: 0.05em;
-        color: #6b7280;
         font-weight: 700;
-        padding: 16px;
+        padding: 18px;
         text-align: left;
     }
 
     td {
-        padding: 16px;
+        padding: 16px 18px;
         border-bottom: 1px solid #f3f4f6;
-        color: #374151;
-        font-size: 0.9rem;
-    }
-
-    tr:last-child td {
-        border-bottom: none;
-    }
-
-    tr:hover {
-        background-color: #f9fafb; /* Highlight suave al pasar el mouse */
-    }
-
-    /* Enlaces en la tabla */
-    td a {
-        color: #4f46e5;
-        font-weight: 600;
-        text-decoration: none;
-        margin-right: 12px;
-        font-size: 0.85rem;
-    }
-    
-    td a:hover {
-        text-decoration: underline;
-    }
-
-    /* --- 7. DETALLES --- */
-    hr {
-        border: 0;
-        height: 1px;
-        background: #e5e7eb;
-        margin: 30px 0;
-    }
-    
-    /* Mensajes de error o éxito */
-    p {
-        line-height: 1.6;
         color: #4b5563;
+        font-size: 0.95rem;
+        vertical-align: middle;
     }
-</style>
+
+    /* Efecto cebra (Zebra Striping) */
+    tbody tr:nth-child(even) {
+        background-color: #f9fafb;
+    }
+
+    tbody tr:hover {
+        background-color: #f3f4f6; /* Highlight al pasar el mouse */
+    }
+
+    /* --- 4. ETIQUETAS (BADGES) --- */
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 9999px; /* Redondo total */
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    
+    .badge-azul { background-color: #e0e7ff; color: #3730a3; } /* Para sexo H */
+    .badge-rosa { background-color: #fce7f3; color: #9d174d; } /* Para sexo M */
+    .badge-verde { background-color: #d1fae5; color: #065f46; } /* Membresía barata */
+    .badge-oro { background-color: #fef3c7; color: #92400e; }   /* Membresía cara */
+
+    /* --- 5. ACCIONES EN TABLA --- */
+    .acciones {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-accion {
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .editar { background-color: #eff6ff; color: #2563eb; }
+    .editar:hover { background-color: #dbeafe; }
+
+    .borrar { background-color: #fef2f2; color: #dc2626; }
+    .borrar:hover { background-color: #fee2e2; }
+
+    /* Alerta bonita */
+    .alerta {
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background-color: #ecfdf5;
+        color: #065f46;
+        border-left: 4px solid #10b981;
+        font-weight: 500;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+    }
+    </style>
 </head>
 <body>
 
     <h1>Administración y Consultas</h1>
 
-    <a href="../formsABC/formAltaMiembro.php"><button type="button">+ Nuevo Registro</button></a>
-    <hr>
-    
     <?php
-        if(isset($_GET['mensaje']) && $_GET['mensaje'] == 'borrado') echo "Eliminado correctamente";
-        if(isset($_GET['mensaje']) && $_GET['mensaje'] == 'actualizado') echo "Datos actualizados";
+        if(isset($_GET['mensaje']) && $_GET['mensaje'] == 'borrado') 
+            echo "<div class='alerta'>Miembro eliminado correctamente</div>";
+        if(isset($_GET['mensaje']) && $_GET['mensaje'] == 'actualizado') 
+            echo "<div class='alerta'> Datos actualizados correctamente</div>";
     ?>
 
-    <form action="formConsultas.php" method="POST">
-        <label>Buscar:</label>
-        <input type="text" name="caja_busqueda" value="<?php echo htmlspecialchars($busqueda); ?>">
-        <input type="submit" name="buscar" value="Buscar">
-        <a href="formConsultas.php"><button type="button">Ver Todos</button></a>
+    <form action="formConsultas.php" method="POST" class="barra-acciones">
+        <a href="../formsABC/formAltaMiembro.php" class="btn-chico">➕ Nuevo Miembro</a>
+        
+        <div style="flex-grow: 1; text-align: center;">
+            <input type="text" name="caja_busqueda" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($busqueda); ?>">
+            <input type="submit" name="buscar" value="Buscar" class="btn-chico btn-secundario">
+            <?php if($busqueda != ""): ?>
+                <a href="formConsultas.php" class="btn-chico btn-secundario">Limpiar</a>
+            <?php endif; ?>
+        </div>
 
-        <a href="../Bienvenida.php" class="btn btn-rojo">Ir a pagina principal</a>
-
+        <a href="../Bienvenida.php" class="btn-chico btn-rojo">Pagina Principal</a>
     </form>
-    <br>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Membresía</th>
-                <th>Vence</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            while($fila = mysqli_fetch_array($resultado)) {
-                echo "<tr>";
-                echo "<td>" . htmlspecialchars($fila['nombre']) . " " . htmlspecialchars($fila['apellidos']) . "</td>";
-                echo "<td>" . htmlspecialchars($fila['telefono']) . "</td>";
-                echo "<td>" . htmlspecialchars($fila['tipo_membresia']) . "</td>";
-                echo "<td>" . htmlspecialchars($fila['fecha_pago']) . "</td>";
-                echo "<td>";
-                
-                echo "<a href='formEditarMiembro.php?id=" . $fila['id'] . "'>Editar</a> | ";
-                
-                echo "<a href='OperacionesConsultas.php?borrar=" . $fila['id'] . "' onclick='return confirm(\"¿Seguro que lo borras?\");'>Borrar</a>";
-                
-                echo "</td>";
-                echo "</tr>";
-            }
-            ?>
-        </tbody>
-    </table>
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <th>Teléfono</th>
+                    <th>Sexo</th>
+                    <th>Edad</th>                
+                    <th>Membresía</th>
+                    <th>Miembro desde</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                while($fila = mysqli_fetch_array($resultado)) {
+                    // Lógica para colores de etiquetas (Badges)
+                    $badgeSexo = ($fila['sexo'] == 'Mujer') ? 'badge-rosa' : 'badge-azul';
+                    
+                    $badgeMembresia = 'badge-verde';
+                    if($fila['tipo_membresia'] == '1 Año' || $fila['tipo_membresia'] == '6 Meses') {
+                        $badgeMembresia = 'badge-oro';
+                    }
+
+                    // Cálculo edad
+                    $nacimiento = new DateTime($fila['fecha_nacimiento']);
+                    $hoy = new DateTime();
+                    $edad = $hoy->diff($nacimiento)->y;
+
+                    echo "<tr>";
+                    // Nombre en negrita
+                    echo "<td><span style='font-weight:600; color:#111827;'>" . htmlspecialchars($fila['nombre']) . " " . htmlspecialchars($fila['apellidos']) . "</span></td>";
+                    
+                    echo "<td>" . htmlspecialchars($fila['telefono']) . "</td>";
+                    
+                    // Sexo con etiqueta
+                    echo "<td><span class='badge $badgeSexo'>" . htmlspecialchars($fila['sexo']) . "</span></td>";
+                    
+                    echo "<td>" . $edad . " años</td>";
+                    
+                    // Membresía con etiqueta
+                    echo "<td><span class='badge $badgeMembresia'>" . htmlspecialchars($fila['tipo_membresia']) . "</span></td>";
+                    
+                    echo "<td style='font-family:monospace; font-size:0.9rem;'>" . htmlspecialchars($fila['fecha_pago']) . "</td>";
+                    
+                    echo "<td>";
+                    echo "<div class='acciones'>";
+                    echo "<a href='formEditarMiembro.php?id=" . $fila['id'] . "' class='btn-accion editar'> Editar</a>";
+                    echo "<a href='OperacionesConsultas.php?borrar=" . $fila['id'] . "' onclick='return confirm(\"¿Seguro que quieres borrar a este miembro?\");' class='btn-accion borrar'>Borrar</a>";
+                    echo "</div>";
+                    echo "</td>";
+                    echo "</tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+        
+        <?php if(mysqli_num_rows($resultado) == 0): ?>
+            <div style="padding: 40px; text-align: center; color: #6b7280;">
+                No se encontraron miembros con esa búsqueda 
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <br><br>
 </body>
 </html>

@@ -24,6 +24,17 @@
     elseif ($tipo_membresia == '6 Meses') $costo = 2500;
     elseif ($tipo_membresia == '1 Año') $costo = 4500;
 
+    $fecha_nacimiento = mysqli_real_escape_string($conexion, $_POST['fecha_nacimiento']);
+    //validacion de la efad
+    $nacimiento = new DateTime($fecha_nacimiento);
+    $hoy = new DateTime();
+    $edad = $hoy->diff($nacimiento)->y;
+    if ($edad < 16) {
+        // Si es menor
+        header("Location: formAltaMiembro.php?error=menor");
+        exit();
+    }
+
     // Insertar (SQL)
     $consulta = "INSERT INTO miembros (nombre, apellidos, telefono, fecha_nacimiento, sexo, fecha_pago, tipo_membresia, costo) 
                  VALUES ('$nombre', '$apellidos', '$telefono', '$fecha_nacimiento', '$sexo', '$fecha_pago', '$tipo_membresia', '$costo')";
