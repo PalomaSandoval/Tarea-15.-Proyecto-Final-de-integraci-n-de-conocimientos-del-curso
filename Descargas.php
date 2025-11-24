@@ -48,7 +48,6 @@
         }
 
         /* --- CONTENEDOR PRINCIPAL --- */
-        /* Le aumenté el ancho máximo para que quepan las fotos chido */
         .contenedor-principal {
             width: 100%;
             max-width: 800px; 
@@ -56,13 +55,12 @@
             box-sizing: border-box;
         }
 
-        /* --- NUEVA GALERÍA DE FOTOS (GRID) --- */
+        /* --- GALERÍA DE FOTOS --- */
         .galeria-fotos {
             display: grid;
-            /* Aquí está el truco: 3 columnas del mismo tamaño */
             grid-template-columns: repeat(3, 1fr); 
             gap: 20px;
-            margin-bottom: 40px; /* Espacio antes de la lista de descargas */
+            margin-bottom: 40px;
         }
 
         .tarjeta-foto {
@@ -74,14 +72,12 @@
             transition: transform 0.2s;
         }
 
-        .tarjeta-foto:hover {
-            transform: translateY(-5px);
-        }
+        .tarjeta-foto:hover { transform: translateY(-5px); }
 
         .tarjeta-foto img {
             width: 100%;
-            height: 150px; /* Altura fija para que no se vea chueco */
-            object-fit: cover; /* Recorta la imagen para que llene el hueco */
+            height: 150px;
+            object-fit: cover;
             display: block;
         }
 
@@ -93,18 +89,17 @@
             color: #374151;
         }
 
-        /* --- LISTA DE DESCARGAS (Estilo anterior) --- */
+        /* --- LISTA DE DESCARGAS --- */
         .lista-descargas {
             background-color: #ffffff;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
             width: 100%;
-            /* max-width: 480px;  <-- Lo quité para que se estire con el contenedor padre */
             box-sizing: border-box;
             border: 1px solid #e5e7eb;
             text-align: center;
-            margin: 0 auto; /* Centrado */
+            margin: 0 auto;
         }
 
         h3 {
@@ -115,6 +110,7 @@
         }
 
         ul { list-style-type: none; padding: 0; margin: 0 0 20px 0; }
+        
         li {
             background-color: #f9fafb;
             margin: 10px 0;
@@ -122,13 +118,18 @@
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             transition: all 0.2s ease;
+            text-align: left; /* Para que el icono y texto se alineen */
+            display: flex;
+            align-items: center;
         }
+        
         li:hover {
             border-color: #4f46e5;
             background-color: #ffffff;
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
+        
         li a {
             text-decoration: none;
             color: #111827;
@@ -155,11 +156,8 @@
             color: #dc2626;
         }
 
-        /* Para que en celular se pongan una abajo de otra y no se vea todo apretado */
         @media (max-width: 600px) {
-            .galeria-fotos {
-                grid-template-columns: 1fr; /* 1 sola columna en cel */
-            }
+            .galeria-fotos { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -172,35 +170,17 @@
     <div class="contenedor-principal">
         
         <div class="galeria-fotos">
-            <div class="tarjeta-foto">
-                <img src="img/1.jpg" alt="Foto 1">
-                <p>Spinning </p>
-            </div>
-            <div class="tarjeta-foto">
-                <img src="img/2.jpg" alt="Foto 2">
-                <p>Pesas</p>
-            </div>
-            <div class="tarjeta-foto">
-                <img src="img/3.jpg" alt="Foto 3">
-                <p>Calistenia</p>
-            </div>
-            
-            <div class="tarjeta-foto">
-                <img src="img/4.jpg" alt="Foto 4">
-                <p>Salto de Cuerda</p>
-            </div>
-            <div class="tarjeta-foto">
-                <img src="img/5.jpg" alt="Foto 5">
-                <p>Caminadora</p>
-            </div>
-            <div class="tarjeta-foto">
-                <img src="img/6.jpg" alt="Foto 6">
-                <p>Pilates</p>
-            </div>
+            <div class="tarjeta-foto"><img src="img/1.jpg" alt="Foto 1"><p>Spinning</p></div>
+            <div class="tarjeta-foto"><img src="img/2.jpg" alt="Foto 2"><p>Pesas</p></div>
+            <div class="tarjeta-foto"><img src="img/3.jpg" alt="Foto 3"><p>Calistenia</p></div>
+            <div class="tarjeta-foto"><img src="img/4.jpg" alt="Foto 4"><p>Salto de Cuerda</p></div>
+            <div class="tarjeta-foto"><img src="img/5.jpg" alt="Foto 5"><p>Caminadora</p></div>
+            <div class="tarjeta-foto"><img src="img/6.jpg" alt="Foto 6"><p>Pilates</p></div>
         </div>
 
         <div class="lista-descargas">
-            <h3>📂 Nuestros miembros aparte de gymrats tambien son ingenieros y le saben al cloud computing, puedes ver algunos de sus trabajos aqui:</h3>
+            <h3>📂 Proyectos y Manuales (Ingeniería Cloud)</h3>
+            <p style="color: #6b7280; margin-bottom: 20px;">Descarga los códigos fuente y recursos en formato ZIP.</p>
             
             <ul>
             <?php
@@ -211,12 +191,19 @@
                     foreach ($archivos as $archivo) {
                         if ($archivo != '.' && $archivo != '..') {
                             $encontroArchivos = true;
-                            echo "<li><a href='$rutaCarpeta$archivo' download>📄 $archivo</a></li>";
+                            $esZip = (substr(strtolower($archivo), -4) == '.zip');                         
+                            $icono = $esZip ? '📦' : '📄'; 
+                            echo "<li>";
+                            echo "<a href='$rutaCarpeta$archivo' download>$icono $archivo</a>"; 
+                            echo "</li>";
                         }
                     }
-                    if (!$encontroArchivos) echo "<p style='color: gray;'>No hay archivos, carnal.</p>";
+
+                    if (!$encontroArchivos) {
+                        echo "<p style='color: gray;'>No hay archivos disponibles por ahora.</p>";
+                    }
                 } else {
-                    echo "<p style='color: red;'>Error: No topo la carpeta 'descargas'.</p>";
+                    echo "<p style='color: red;'>Error: No encuentro la carpeta 'descargas'.</p>";
                 }
             ?>
             </ul>
